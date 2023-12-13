@@ -61,6 +61,11 @@
   :type 'number
   :group 'scratch-posframe)
 
+(defcustom scratch-posframe-buffer-setup #'ignore
+  "scratch-posframe buffer setup"
+  :type 'function
+  :group 'scratch-posframe)
+
 (defface scratch-posframe-border
   '((t (:inherit default :background "gray50")))
   "Face used by the scratch-posframe"
@@ -102,14 +107,15 @@
            :hidehandler #'(scratch-posframe--hide-when-focus-lost)
            :cursor t
            :respect-header-line t
+           :accept-focus t
+           :refresh nil
            :border-width scratch-posframe-border-width))
 
     (setq scratch-posframe--buffer buffer)
     (setq scratch-posframe--frame frame)
     (x-focus-frame frame)
     (with-current-buffer buffer
-      (setq-local header-line-format "scratch")
-      (setq-local cursor-type nil))
+      (funcall scratch-posframe-buffer-setup))
     (dolist (window (window-list frame))
       (set-window-margins window 4 4)))
   ;; timeout 0.5 seconds
